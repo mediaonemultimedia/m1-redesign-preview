@@ -362,7 +362,7 @@ function pageAds() {
   </section>
   <section class="row wrap"><span class="chip on">${logoTile(C.northline).replace('logo-tile', 'logo-tile" style="width:18px;height:18px;font-size:8px;border-radius:4px;background:#C8102E')} Northline <span class="c">5</span></span>${['prairie', 'gridcoop', 'cedarview', 'north-aspen', 'westbrook', 'harbourlight', 'm1'].map(s => `<span class="chip">${C[s].name}${s === 'gridcoop' ? ' <span class="c">1</span>' : ''}</span>`).join('')}</section>
   <section class="kpis">
-    <div class="kpi hero"><span class="l">Spend · month to date</span><span class="v">$4,897</span><span class="s"><span class="delta up">↑28%</span> vs Sep 1–15 · no budget set</span>${spark([3, 5, 4, 7, 9, 8, 11, 13, 12, 15, 17, 16, 19, 21, 24], 300, 30)}</div>
+    <div class="kpi hero"><span class="l">Spend · month to date</span><span class="v">$4,897</span><span class="s"><span class="delta flat">↑28%</span> vs Sep 1–15 · no budget set</span>${spark([3, 5, 4, 7, 9, 8, 11, 13, 12, 15, 17, 16, 19, 21, 24], 300, 30)}</div>
     <div class="kpi"><span class="l">Impressions</span><span class="v">407K</span><span class="s"><span class="delta up">↑46%</span> vs last month</span></div>
     <div class="kpi"><span class="l">Clicks</span><span class="v">2.5K</span><span class="s"><span class="delta down">↓30%</span> 0.61% CTR</span></div>
     <div class="kpi" style="border-color:color-mix(in oklab,var(--crit) 35%,var(--line))"><span class="l" style="color:var(--crit-ink)">Conversions</span><span class="v">7</span><span class="s"><span class="delta down">↓54%</span> $320 per lead</span></div>
@@ -493,7 +493,7 @@ function pageAI() {
   <section class="panel row" style="gap:14px;border-color:color-mix(in oklab,var(--ok) 35%,var(--line));background:color-mix(in oklab,var(--ok-soft) 60%,var(--surface))"><span class="dot ok" style="box-shadow:0 0 0 4px var(--ok-soft)"></span><b>All clear</b><span class="muted">23 of 24 jobs healthy · 1 late · 0 failed calls in 30 days</span></section>
   <section class="kpis">
     <div class="kpi hero"><span class="l">Spend · 30 days</span><span class="v">$3.18</span><span class="s">481 calls · $0.0066 avg</span>${spark([2, 3, 2, 5, 4, 6, 9, 7, 8, 11, 9, 12, 10, 8], 300, 30)}</div>
-    <div class="kpi"><span class="l">Spend today</span><span class="v">$0.004</span><span class="s"><span class="delta down">↓96%</span> vs yesterday</span></div>
+    <div class="kpi"><span class="l">Spend today</span><span class="v">$0.004</span><span class="s"><span class="delta flat">↓96%</span> vs yesterday</span></div>
     <div class="kpi"><span class="l">Tokens in / out</span><span class="v">811k</span><span class="s">54.3k out · 0 cache reads</span></div>
     <div class="kpi"><span class="l">Error rate</span><span class="v">0.0%</span><span class="s">0 of 481 calls</span></div>
   </section>
@@ -562,8 +562,12 @@ function render() {
 }
 function route() {
   // Premium: morph shared elements (client logo tile -> hub header) between pages
-  if (STYLE !== 'standard' && document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(render);
-  else render();
+  if (STYLE !== 'standard' && document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches && document.visibilityState === 'visible' && !route.busy) {
+    const t = document.startViewTransition(render);
+    route.busy = true;
+    t.finished.catch(() => {}).finally(() => { route.busy = false; });
+    t.ready.catch(() => {}); t.updateCallbackDone.catch(() => {});
+  } else render();
 }
 
 /* ---------- Style mode (Standard / Premium) ---------- */
@@ -583,23 +587,23 @@ function setStyle(v) {
 applyStyle();
 
 /* Bold mode: every page opens with a two-part statement. The coloured second
-   line signals state: warm = needs attention, cool = healthy, info = neutral. */
+   line signals state: crit = red (wrong), warn = yellow (attention), ok = green (healthy), info = brand. */
 const BOLD = {
-  today: ['Good morning, Kevin.', '3 things need you today.', 'warm'],
-  clients: ['23 clients.', '3 are over budget.', 'warm'],
-  bd: ['295 nations scored.', '18 still need an owner.', 'warm'],
-  advertising: ['Spend is up.', 'Conversions aren’t.', 'warm'],
-  socials: ['One client is hurting.', 'Cedarview needs a reply.', 'warm'],
-  resourcing: ['2,103 hours queued.', '643 have no owner.', 'warm'],
+  today: ['Good morning, Kevin.', '3 things need you today.', 'crit'],
+  clients: ['23 clients.', '3 are over budget.', 'crit'],
+  bd: ['295 nations scored.', '18 still need an owner.', 'warn'],
+  advertising: ['Spend is up.', 'Conversions aren’t.', 'warn'],
+  socials: ['One client is hurting.', 'Cedarview needs a reply.', 'crit'],
+  resourcing: ['2,103 hours queued.', '643 have no owner.', 'warn'],
   drive: ['Claude can read 86%.', '47 documents are waiting.', 'info'],
-  ai: ['All clear.', '$3.18 across 30 days.', 'cool'],
+  ai: ['All clear.', '$3.18 across 30 days.', 'ok'],
   system: ['One system.', 'Every page.', 'info'],
 };
 function boldHeadline(page, sub) {
   let h = BOLD[page];
   if (page === 'clients' && sub) {
     const c = C[sub] || C.northline; const over = c.budget > 100;
-    h = [c.name + '.', over ? `${c.budget}% of budget used.` : `${c.budget}% through October.`, over ? 'warm' : c.budget > 85 ? 'info' : 'cool'];
+    h = [c.name + '.', over ? `${c.budget}% of budget used.` : `${c.budget}% through October.`, over ? 'crit' : c.budget > 85 ? 'warn' : 'ok'];
     const t = $('.hub-head h1'); if (t) t.innerHTML = `${h[0]}<br><span class="hl ${h[2]}">${h[1]}</span>`;
     return;
   }
@@ -667,4 +671,4 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter') { const a = $('#cmdk-list').querySelectorAll('a')[cmdSel]; if (a) { location.hash = a.getAttribute('href'); closeCmdk(); } }
 });
 
-route();
+render();  // first paint renders directly (no page transition on load)
