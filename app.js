@@ -151,7 +151,7 @@ function renderTopbar(crumbs, fresh) {
     <div class="crumbs">${crumbs.map((c, i) => i === crumbs.length - 1 ? `<b>${c}</b>` : `<a href="${c[1]}">${c[0]}</a><i>/</i>`).join('')}</div>
     ${fresh ? `<span class="fresh ${fresh.stale ? 'stale' : ''}">${fresh.text}</span>` : ''}
     <div class="tb-space"></div>
-    <div class="seg style-toggle" title="Switch design mode"><button data-style="standard" class="${STYLE === 'standard' ? 'on' : ''}">Standard</button><button data-style="premium" class="${STYLE === 'premium' ? 'on' : ''}">Premium</button></div>
+    <div class="seg style-toggle" title="Switch design mode"><button data-style="standard" class="${STYLE === 'standard' ? 'on' : ''}">Standard</button><button data-style="premium" class="${STYLE === 'premium' ? 'on' : ''}">Premium</button><button data-style="bold" class="${STYLE === 'bold' ? 'on' : ''}">Bold</button></div>
     <button class="btn ghost icon-btn" id="theme" title="Toggle theme">${I.moon}</button>
     <button class="btn ask" id="ask">${I.spark} <span>Ask Claude</span></button>`;
   $('#theme').onclick = () => { const r = document.documentElement; r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark'; };
@@ -558,11 +558,11 @@ function render() {
   $('#view').innerHTML = `<div class="page">${r.html}</div>`;
   document.title = `${typeof r.crumbs.at(-1) === 'string' ? r.crumbs.at(-1) : 'M1'} · M1`;
   $('#app').classList.remove('mnav'); window.scrollTo(0, 0);
-  if (STYLE === 'premium') enhance(p, s);
+  if (STYLE !== 'standard') enhance(p, s);
 }
 function route() {
   // Premium: morph shared elements (client logo tile -> hub header) between pages
-  if (STYLE === 'premium' && document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(render);
+  if (STYLE !== 'standard' && document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(render);
   else render();
 }
 
@@ -572,15 +572,39 @@ let STYLE = new URLSearchParams(location.search).get('style') || store('m1-style
 function applyStyle() {
   const r = document.documentElement;
   r.dataset.style = STYLE;
-  if (!r.dataset.theme) r.dataset.theme = STYLE === 'premium' ? 'dark' : 'light';
+  if (!r.dataset.theme) r.dataset.theme = STYLE === 'standard' ? 'light' : 'dark';
 }
 function setStyle(v) {
   STYLE = v; store('m1-style', v);
   if (location.search.includes('style=')) history.replaceState(null, '', location.pathname + location.hash);
-  document.documentElement.dataset.theme = v === 'premium' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = v === 'standard' ? 'light' : 'dark';
   applyStyle(); render();
 }
 applyStyle();
+
+/* Bold mode: every page opens with a two-part statement. The coloured second
+   line signals state: warm = needs attention, cool = healthy, info = neutral. */
+const BOLD = {
+  today: ['Good morning, Kevin.', '3 things need you today.', 'warm'],
+  clients: ['23 clients.', '3 are over budget.', 'warm'],
+  bd: ['295 nations scored.', '18 still need an owner.', 'warm'],
+  advertising: ['Spend is up.', 'Conversions aren’t.', 'warm'],
+  socials: ['One client is hurting.', 'Cedarview needs a reply.', 'warm'],
+  resourcing: ['2,103 hours queued.', '643 have no owner.', 'warm'],
+  drive: ['Claude can read 86%.', '47 documents are waiting.', 'info'],
+  ai: ['All clear.', '$3.18 across 30 days.', 'cool'],
+  system: ['One system.', 'Every page.', 'info'],
+};
+function boldHeadline(page, sub) {
+  let h = BOLD[page];
+  if (page === 'clients' && sub) {
+    const c = C[sub] || C.northline; const over = c.budget > 100;
+    h = [c.name + '.', over ? `${c.budget}% of budget used.` : `${c.budget}% through October.`, over ? 'warm' : c.budget > 85 ? 'info' : 'cool'];
+    const t = $('.hub-head h1'); if (t) t.innerHTML = `${h[0]}<br><span class="hl ${h[2]}">${h[1]}</span>`;
+    return;
+  }
+  const t = $('.page .ph h1'); if (h && t) t.innerHTML = `${h[0]}<br><span class="hl ${h[2]}">${h[1]}</span>`;
+}
 
 /* Premium-only enhancements: unit styling, count-up, briefing, chart annotations */
 function enhance(page, sub) {
@@ -600,13 +624,14 @@ function enhance(page, sub) {
     requestAnimationFrame(tick);
   });
   // 3. Claude's morning briefing on Today
-  if (page === 'today') {
+  if (STYLE === 'premium' && page === 'today') {
     const ph = $('.page .ph');
     ph.insertAdjacentHTML('afterend', `<section class="brief"><div class="brief-k">${I.spark} Morning briefing · written by Claude at 6:00 a.m.</div>
       <p><em>Cedarview Health</em> needs a reply plan today: sentiment fell to 31 on wait-time complaints. <em>Northline</em> conversions dropped 54% after tracking broke on Oct 9, so fix that before raising spend. <em>Ridgeway</em> is at 162% of budget, which means the estimate needs a reset, not more hours.</p>
       <div class="brief-a"><a href="#/socials">Draft Cedarview Health reply</a><a href="#/advertising">Open Northline findings</a><a href="#/clients/ridgeway">Re-estimate Ridgeway</a></div></section>`);
   }
   // 4. Editorial annotations written onto charts
+  if (STYLE === 'bold') return boldHeadline(page, sub);
   const bars = $('.bars-v');
   if (bars) bars.parentElement.insertAdjacentHTML('beforeend', `<div class="annot" style="left:${(4.5 / 13) * 100}%;bottom:${(118 / 140) * 100}%"><span>Deficit begins</span></div>`);
   const gts = document.querySelectorAll('.gantt .gt');
