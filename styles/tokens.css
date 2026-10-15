@@ -1,0 +1,165 @@
+/* ==========================================================================
+   M1 Dashboard — design tokens (v0.1 reference)
+   Single source of truth. Components must only use these variables.
+   Colour values are tuned by eye in OKLCH and given as hex for portability.
+   ========================================================================== */
+
+:root {
+  /* ---- Type ---------------------------------------------------------- */
+  --font-ui: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-num: "Geist Mono", ui-monospace, monospace;            /* tabular figures, IDs, money */
+  --font-display: "Barlow Condensed", "Geist", sans-serif;      /* hero numerals + kickers. Licensed swap: Trade Gothic Condensed (m1agency.ca) */
+
+  --fs-11: 11px;   /* kicker, legend, meta */
+  --fs-12: 12px;   /* table cells, captions */
+  --fs-13: 13px;   /* body, controls (base) */
+  --fs-14: 14px;   /* emphasised body, nav */
+  --fs-16: 16px;   /* panel titles */
+  --fs-20: 20px;   /* section titles */
+  --fs-28: 28px;   /* page titles */
+  --fs-num-md: 26px;   /* KPI value (mono) */
+  --fs-hero: 52px;     /* hero numeral (display) */
+
+  --lh-tight: 1.15;
+  --lh-body: 1.5;
+  --track-kicker: 0.09em;
+
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+
+  /* ---- Space (4px grid) ------------------------------------------------ */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 48px;
+
+  /* ---- Shape ----------------------------------------------------------- */
+  --r-xs: 4px;     /* chips, bars, cells */
+  --r-sm: 6px;     /* controls, inputs, buttons */
+  --r-md: 10px;    /* panels, cards */
+  --r-lg: 14px;    /* overlays, command palette */
+  --r-pill: 999px; /* status pills + count badges ONLY */
+  --stroke: 1px;
+
+  /* ---- Motion ---------------------------------------------------------- */
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --dur-1: 120ms;  /* hover, press */
+  --dur-2: 200ms;  /* panels, tabs */
+  --dur-3: 320ms;  /* page, overlays */
+
+  /* ---- Layout ---------------------------------------------------------- */
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 64px;
+  --topbar-h: 56px;
+  --content-max: 1440px;
+
+  /* ======================================================================
+     COLOUR — "Stone & Lagoon"
+     Neutrals: warm stone greys (a specific grey, not Tailwind slate).
+     Accent:   Lagoon, a deep teal. Interactive + brand moments only.
+     Status/data colours are a separate family and never used decoratively.
+     ====================================================================== */
+
+  /* Neutrals (light) */
+  --bg:          #F5F4F1;  /* app background */
+  --surface:     #FFFFFF;  /* panels, cards */
+  --surface-2:   #FAF9F7;  /* table header, nested wells */
+  --surface-3:   #F0EEEA;  /* hover, selected row */
+  --line:        #E6E3DD;  /* hairlines */
+  --line-strong: #D3CFC7;  /* section rules, inputs */
+  --text:        #1B1A18;
+  --text-2:      #55524C;
+  --text-3:      #8A867E;  /* meta, placeholders (AA on --surface at 13px+) */
+  --text-inverse:#F4F2EE;
+
+  /* Sidebar (graphite, always dark — echoes m1agency.ca) */
+  --nav-bg:      #161614;
+  --nav-bg-2:    #1F1F1C;
+  --nav-line:    #2A2926;
+  --nav-text:    #A9A59C;
+  --nav-text-on: #F4F2EE;
+
+  /* Accent: Lagoon */
+  --accent:      #127C82;
+  --accent-hover:#0E6A6F;
+  --accent-soft: #E2F0EF;
+  --accent-ink:  #0B5A5E;  /* accent text on light */
+
+  /* Status / severity (one family, shared L/C bands) */
+  --crit:  #C2452D;  --crit-soft:  #FBE9E4;  --crit-ink:  #9A3220;   /* Brick   */
+  --warn:  #C98A12;  --warn-soft:  #FBF1DC;  --warn-ink:  #8A5D06;   /* Saffron */
+  --ok:    #4E8A3E;  --ok-soft:    #E8F1E2;  --ok-ink:    #36632A;   /* Moss    */
+  --info:  #3A6EA5;  --info-soft:  #E5EEF7;  --info-ink:  #285383;   /* Harbour */
+  --idle:  #9A968D;  --idle-soft:  #EFEDE9;  --idle-ink:  #5F5B54;   /* Fog     */
+
+  /* Sentiment scale (Socials) — pressing → healthy */
+  --sent-pressing: var(--crit);
+  --sent-risk:     #D9692B;   /* Ember */
+  --sent-watch:    var(--warn);
+  --sent-healthy:  var(--ok);
+
+  /* Budget scale */
+  --budget-deficit: var(--crit);
+  --budget-plan:    #6F6B63;
+  --budget-surplus: var(--ok);
+
+  /* Series (ad platforms, categorical) — distinct hue, shared lightness */
+  --series-1: #3A6EA5;  /* Google Ads  — Harbour */
+  --series-2: #8A5A9E;  /* StackAdapt  — Plum    */
+  --series-3: #2AA39C;  /* Meta        — Lagoon light */
+  --series-4: #B8873B;  /* Taboola     — Ochre   */
+  --series-5: #9A968D;  /* Other       — Fog     */
+
+  /* Sequential (heatmaps, treemaps) — Lagoon ramp */
+  --seq-0: #EEECE8;
+  --seq-1: #CDE5E3;
+  --seq-2: #93C8C4;
+  --seq-3: #4FA3A0;
+  --seq-4: #127C82;
+  --seq-5: #0B5357;
+
+  /* Elevation */
+  --shadow-1: 0 1px 2px rgba(27,26,24,.05);
+  --shadow-2: 0 4px 16px rgba(27,26,24,.08), 0 1px 3px rgba(27,26,24,.05);
+  --shadow-3: 0 24px 64px rgba(27,26,24,.18), 0 2px 8px rgba(27,26,24,.08);
+  --focus: 0 0 0 3px color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+/* Dark theme — same roles, re-tuned values */
+:root[data-theme="dark"] {
+  --bg:          #121211;
+  --surface:     #1A1A18;
+  --surface-2:   #1F1F1C;
+  --surface-3:   #262623;
+  --line:        #2B2A27;
+  --line-strong: #3A3935;
+  --text:        #EEEBE5;
+  --text-2:      #B3AEA4;
+  --text-3:      #85817A;
+  --text-inverse:#161614;
+
+  --nav-bg:      #0D0D0C;
+  --nav-bg-2:    #181816;
+  --nav-line:    #232220;
+
+  --accent:      #2BA9AE;
+  --accent-hover:#3BBABF;
+  --accent-soft: #14302F;
+  --accent-ink:  #6CCFD2;
+
+  --crit-soft: #3A1F19;  --crit-ink: #F0907B;
+  --warn-soft: #362A12;  --warn-ink: #E8B85A;
+  --ok-soft:   #1D2C18;  --ok-ink:   #94C783;
+  --info-soft: #182637;  --info-ink: #8DB5E0;
+  --idle-soft: #262623;  --idle-ink: #B3AEA4;
+
+  --seq-0: #22221F;
+  --seq-1: #173634;
+  --seq-2: #1E5552;
+  --seq-3: #217A77;
+  --seq-4: #2BA9AE;
+  --seq-5: #7AD3D6;
+
+  --shadow-1: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-2: 0 6px 20px rgba(0,0,0,.45);
+  --shadow-3: 0 28px 70px rgba(0,0,0,.6);
+}
