@@ -54,10 +54,10 @@
   --warn: #FFD166; --warn-soft: rgba(255,209,102,.13); --warn-ink: #FFD98A;
   --ok:   #06D6A0; --ok-soft:   rgba(6,214,160,.13);   --ok-ink:   #4BE6BC;
   --info: #4361EE; --info-soft: rgba(67,97,238,.16);   --info-ink: #8CA0FF;
-  --idle: #64748B; --idle-soft: rgba(100,116,139,.16); --idle-ink: #A7B1C4;
+  --idle: #3D4478; --idle-soft: rgba(91,101,170,.18); --idle-ink: #AAB2DA;   /* muted indigo from the navy family, not stock slate */
   --sent-risk: #FF8C42;
 
-  --series-1: #4361EE; --series-2: #B5179E; --series-3: #4CC9F0; --series-4: #9D7CFF; --series-5: #64748B;
+  --series-1: #4361EE; --series-2: #B5179E; --series-3: #4CC9F0; --series-4: #9D7CFF; --series-5: #3D4478;
   --seq-0: #12122C; --seq-1: #1B2A5E; --seq-2: #2B3FA6; --seq-3: #4361EE; --seq-4: #4C9BF0; --seq-5: #4CC9F0;
 
   --shadow-1: 0 0 0 1px var(--line);
@@ -85,6 +85,7 @@
   --warn: #F2A900; --warn-soft: #FFF4D6; --warn-ink: #8A6100;
   --ok:   #05B386; --ok-soft:   #DDF8F0; --ok-ink:   #04765A;
   --info: #3A56E0; --info-soft: #E6EAFE; --info-ink: #2A40B0;
+  --idle: #AEB5D6; --idle-soft: #ECEEF7; --idle-ink: #545C86;
   --sent-risk: #F07022;
   --series-1: #3A56E0; --series-2: #B5179E; --series-3: #0AB2E8; --series-4: #7B61FF;
   --seq-0: #EEF0F7; --seq-1: #D3E6FB; --seq-2: #9FCBF5; --seq-3: #5EA8EE; --seq-4: #4361EE; --seq-5: #2A2F9E;

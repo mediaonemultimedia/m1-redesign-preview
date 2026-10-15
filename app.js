@@ -154,7 +154,7 @@ function renderTopbar(crumbs, fresh) {
     <div class="seg style-toggle" title="Switch design mode"><button data-style="standard" class="${STYLE === 'standard' ? 'on' : ''}">Standard</button><button data-style="premium" class="${STYLE === 'premium' ? 'on' : ''}">Premium</button><button data-style="bold" class="${STYLE === 'bold' ? 'on' : ''}">Bold</button></div>
     <button class="btn ghost icon-btn" id="theme" title="Toggle theme">${I.moon}</button>
     <button class="btn ask" id="ask">${I.spark} <span>Ask Claude</span></button>`;
-  $('#theme').onclick = () => { const r = document.documentElement; r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark'; };
+  $('#theme').onclick = () => { const r = document.documentElement; r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark'; fixBarLabels(); };
   $('#ask').onclick = openCmdk;
   document.querySelectorAll('.style-toggle button').forEach(b => b.onclick = () => setStyle(b.dataset.style));
   const m = $('#mnav'); if (m) m.onclick = () => $('#app').classList.toggle('mnav');
@@ -428,8 +428,8 @@ function pageResourcing() {
   </section>
   <section class="panel">
     <div class="panel-h"><h3>Open queue by status</h3><span class="meta">Click a segment to open the list</span></div>
-    <div class="stackbar"><div style="flex:211;background:var(--idle)">211 not started</div><div style="flex:99;background:var(--accent)">99 ongoing</div><div style="flex:84;background:var(--warn)">84 on hold</div><div style="flex:35;background:var(--info)">35</div><div style="flex:16;background:var(--line-strong);color:var(--text-2)">16</div></div>
-    <div class="legend"><span><i style="background:var(--idle)"></i>Not started</span><span><i style="background:var(--accent)"></i>Ongoing</span><span><i style="background:var(--warn)"></i>On hold</span><span><i style="background:var(--info)"></i>In progress</span><span><i style="background:var(--line-strong)"></i>Other</span></div>
+    <div class="stackbar"><div style="flex:211;background:var(--idle)">211 not started</div><div style="flex:99;background:var(--accent)">99 ongoing</div><div style="flex:84;background:var(--warn)">84 on hold</div><div style="flex:35;background:var(--info)">35</div><div style="flex:16;background:var(--surface-3);box-shadow:inset 0 0 0 1px var(--line-strong)">16</div></div>
+    <div class="legend"><span><i style="background:var(--idle)"></i>Not started</span><span><i style="background:var(--accent)"></i>Ongoing</span><span><i style="background:var(--warn)"></i>On hold</span><span><i style="background:var(--info)"></i>In progress</span><span><i style="background:var(--surface-3);box-shadow:inset 0 0 0 1px var(--line-strong)"></i>Other</span></div>
   </section>
   <section class="grid g-main">
     <div class="panel">
@@ -559,6 +559,7 @@ function render() {
   document.title = `${typeof r.crumbs.at(-1) === 'string' ? r.crumbs.at(-1) : 'M1'} · M1`;
   $('#app').classList.remove('mnav'); window.scrollTo(0, 0);
   if (STYLE !== 'standard') enhance(p, s);
+  fixBarLabels();
 }
 function route() {
   // Premium: morph shared elements (client logo tile -> hub header) between pages
@@ -568,6 +569,20 @@ function route() {
     t.finished.catch(() => {}).finally(() => { route.busy = false; });
     t.ready.catch(() => {}); t.updateCallbackDone.catch(() => {});
   } else render();
+}
+
+
+/* Stacked-bar labels: choose dark or white text from the segment's actual fill (WCAG luminance) */
+function fixBarLabels() {
+  const lum = c => { const m = c.match(/[\d.]+/g); if (!m) return 1; const a = m[3] !== undefined ? +m[3] : 1;
+    const bg = getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g).map(Number);
+    const ch = [0, 1, 2].map(i => (+m[i]) * a + bg[i] * (1 - a)).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; });
+    return .2126 * ch[0] + .7152 * ch[1] + .0722 * ch[2]; };
+  document.querySelectorAll('.stackbar div, .treemap div, .gantt .b').forEach(d => {
+    const L = lum(getComputedStyle(d).backgroundColor);
+    const onWhite = 1.05 / (L + .05), onDark = (L + .05) / (0.0117 + .05);
+    d.classList.toggle('on-light', onDark > onWhite); d.classList.toggle('on-dark', onDark <= onWhite);
+  });
 }
 
 /* ---------- Style mode (Standard / Premium) ---------- */

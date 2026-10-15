@@ -254,7 +254,9 @@ table.t { width: 100%; border-collapse: collapse; font-size: var(--fs-12); }
 .funnel-row .bar { height: 22px; border-radius: var(--r-xs); background: var(--accent); }
 .funnel-drop { margin-left: 174px; font-size: 11.5px; color: var(--warn-ink); display: flex; gap: 6px; align-items: center; }
 .stackbar { display: flex; height: 28px; border-radius: var(--r-xs); overflow: hidden; gap: 2px; }
-.stackbar div { display: grid; place-items: center; font-family: var(--font-num); font-size: 11px; color: #fff; font-weight: var(--w-medium); }
+.stackbar div { display: grid; place-items: center; padding: 0 8px; font-family: var(--font-ui); font-size: 12px; font-weight: 600; letter-spacing: 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-feature-settings: "tnum" 1; }
+.stackbar div.on-light, .treemap div.on-light, .gantt .b.on-light { color: #14141A !important; }
+.stackbar div.on-dark, .treemap div.on-dark, .gantt .b.on-dark { color: #FFFFFF !important; }
 .legend { display: flex; gap: var(--s-4); flex-wrap: wrap; font-size: 11.5px; color: var(--text-2); margin-top: var(--s-3); }
 .legend span { display: flex; align-items: center; gap: 6px; }
 .legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
